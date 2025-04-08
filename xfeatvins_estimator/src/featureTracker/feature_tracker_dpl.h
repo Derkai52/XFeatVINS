@@ -102,7 +102,7 @@ public:
     // functions for replace extractor
     cv::Mat Extractor_PreProcess(const cv::Mat &srcImage, float &scale);
     void goodFeaturesToTrack_dpl(cv::Mat img, vector<cv::Point2f> &pts, vector<pair<cv::Point2f, vector<float>>> &dplpts_descriptors, int max_num, double extractor_threshold, int radius, cv::Mat &mask);
-    void extract_features_dpl(cv::Mat img, vector<cv::Point2f> &pts, vector<pair<cv::Point2f, vector<float>>> &dplpts_descriptors);
+    void extract_features_dpl(cv::Mat img, vector<cv::Point2f> &pts, vector<pair<cv::Point2f, vector<float>>> &dplpts_descriptors, int max_num, double extractor_threshold, int radius, cv::Mat &mask);
 
     // functions for replace matcher
     void match_features_dpl(cv::Mat prev_img_, cv::Mat cur_img_, vector<pair<cv::Point2f, vector<float>>> &prev_dplpts_descriptors_, vector<pair<cv::Point2f, vector<float>>> &cur_dplpts_descriptors_, vector<pair<int, int>> &result_matches,double &ransacReprojThreshold);

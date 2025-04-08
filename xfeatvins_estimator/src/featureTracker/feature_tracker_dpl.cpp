@@ -32,13 +32,30 @@ void FeatureTrackerDPL::initializeExtractorMatcher(int extractor_type_, string &
 
 }
 
-
-void FeatureTrackerDPL::extract_features_dpl(cv::Mat img, vector<cv::Point2f> &pts, vector<pair<cv::Point2f, vector<float>>> &dplpts_descriptors)
+// TODO(Derkai): 这里可能还有数据管理的隐患
+void FeatureTrackerDPL::extract_features_dpl(cv::Mat img, vector<cv::Point2f> &pts, vector<pair<cv::Point2f, vector<float>>> &dplpts_descriptors, int max_num, double extractor_threshold, int radius, cv::Mat &mask)
 {
     cv::Mat im = img.clone();
     // cv::Mat im_preprocessed = Extractor_PreProcess(im, FeatureExtractorDPL->scale);
     // std::pair<std::vector<cv::Point2f>, float *> result_dplpts_descriptors = FeatureExtractorDPL->extract_featurepoints(im_preprocessed);
 
+    cv::Mat eig, tmp;
+    std::vector<float> scores;
+    size_t i, j , ncorners = 0;
+
+    // Partition the image into larger grids
+    int w = im.cols;
+    int h = im.rows;
+
+    const int cell_size = cvRound(radius);
+    const int grid_width = (w + cell_size - 1) / cell_size;
+    const int grid_height = (h + cell_size - 1) / cell_size;
+
+    std::vector<std::vector<cv::Point2f> > grid(grid_width * grid_height);
+
+    double minDistance_squre = radius * radius;
+
+    // 网络推理出特征点、描述子、得分图
     torch::Tensor feats1, keypoints1, heatmap1, idx1;
     FeatureExtractorDPL->detectAndCompute(im, keypoints1, feats1, heatmap1);
 
@@ -49,10 +66,67 @@ void FeatureTrackerDPL::extract_features_dpl(cv::Mat img, vector<cv::Point2f> &p
         cv::Point2f p(x, y);
         if (!inBorder(p))
             continue;
-        pts.push_back(p);
+
+        // 栅格化
+        bool good = true;
+        int x_cell = (int)x / cell_size;
+        int y_cell = (int)y / cell_size;
+
+        int x1 = x_cell - 1;
+        int y1 = y_cell - 1;
+        int x2 = x_cell + 1;
+        int y2 = y_cell + 1;
+
+        // boundary check
+        x1 = std::max(0, x1);
+        y1 = std::max(0, y1);
+        x2 = std::min(grid_width - 1, x2);
+        y2 = std::min(grid_height - 1, y2);
+
+        for(int yy = y1; yy <= y2; yy++)
+        {
+            for(int xx = x1; xx <= x2; xx++)
+            {
+                std::vector <cv::Point2f> &m = grid[yy * grid_width + xx];
+
+                if(m.size())
+                {
+                    for(j = 0; j < m.size(); j++)
+                    {
+                        float dx = x - m[j].x;
+                        float dy = y - m[j].y;
+
+                        if( dx * dx + dy * dy < minDistance_squre )
+                        {
+                            good = false;
+                            goto break_out;
+                        }
+                    }
+                }
+            }
+        }
+
+        break_out:
+
+        if (good)
+        {
+            grid[y_cell*grid_width + x_cell].push_back(cv::Point2f((float)x, (float)y));
+
+            if (mask.at<uchar>(cv::Point2f((float)x, (float)y)) == 255)
+            {
+                // std::vector<float> descriptor(result_dplpts_descriptors.second + i * descriptor_size, result_dplpts_descriptors.second + (i + 1) * descriptor_size);
+                pts.push_back(cv::Point2f((float)x, (float)y));
+                // dplpts_descriptors.push_back(make_pair(dplpt, descriptor));
+            }
+
+            ++ncorners;
+
+            if( max_num > 0 && (int)ncorners == max_num )
+                break;
+        }
     }
 
-    std::cout<<"All operations successful!"<< std::endl;
+    // std::cout<<"All operations successful!"<< std::endl;
 
 }
 
@@ -258,8 +332,10 @@ map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> FeatureTrackerDPL::trac
                 cout << "mask is empty " << endl;
             if (mask.type() != CV_8UC1)
                 cout << "mask type wrong " << endl;
+            // cv::imshow("mask", mask);
+            // cv::waitKey(1);
             auto start = std::chrono::high_resolution_clock::now();
-            // extract_features_dpl(cur_img, n_pts, cur_dplpts_descriptors);
+            // extract_features_dpl(cur_img, n_pts, cur_dplpts_descriptors, MAX_CNT-cur_pts.size(), 0.01, MIN_DIST, mask);
             cv::goodFeaturesToTrack(cur_img, n_pts, MAX_CNT - cur_pts.size(), 0.01, MIN_DIST, mask);//按照掩码提取新的特征点，存到n_pts当中，补足到Max_CNT数目
             // 结束计时
             auto end = std::chrono::high_resolution_clock::now();

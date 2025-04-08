@@ -186,7 +186,7 @@ void Estimator::inputImage(double t, const cv::Mat &_img, const cv::Mat &_img1)
         // Save the descriptor as cv::mat
         vector<pair<cv::Point2f, vector<float>>> kptAndDescriptors = featureTracker.cur_dplpts_descriptors;
 
-        std::cout << std::fixed << std::setprecision(9) << t << std::endl;
+        // std::cout << std::fixed << std::setprecision(9) << t << std::endl;
 
         // 先初始化描述子，cv::Mat形式
         // First initialize the descriptor, in the form of cv::mat

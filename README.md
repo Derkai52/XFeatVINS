@@ -14,6 +14,9 @@
 ```bash
 git clone https://github.com/Derkai52/XFeatVINS.git
 catkin_make
+
+git clone https://github.com/emNavi/hik-camera-ros-driver.git
+catkin_make
 ```
 
 ## 生成 .engine 模型文件

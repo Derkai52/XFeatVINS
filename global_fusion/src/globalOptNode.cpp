@@ -190,7 +190,7 @@ int main(int argc, char **argv)
     // 订阅GPS
     ros::Subscriber sub_GPS = n.subscribe("/mavros/global_position/raw/fix", 100, GPS_callback); // gps
     // 订阅里程计
-    ros::Subscriber sub_vio = n.subscribe("/supervins/odometry", 100, vio_callback);
+    ros::Subscriber sub_vio = n.subscribe("/xfeatvins/odometry", 100, vio_callback);
 
     // 发布轨迹
     pub_global_path = n.advertise<nav_msgs::Path>("global_path", 100);

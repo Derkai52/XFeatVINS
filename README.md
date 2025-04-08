@@ -14,7 +14,12 @@
 ```bash
 git clone https://github.com/Derkai52/XFeatVINS.git
 catkin_make
+```
 
+## 生成 .engine 模型文件
+```bash
+cd src/xfeatvins/xfeatvins_estimator/src/
+python3 export.py
 ```
 
 ## 运行

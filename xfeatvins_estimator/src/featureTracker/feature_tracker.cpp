@@ -359,7 +359,7 @@ void FeatureTracker::readIntrinsicParameter(const vector<string> &calib_file)
     for (size_t i = 0; i < calib_file.size(); i++)
     {
         ROS_INFO("reading paramerter of camera %s", calib_file[i].c_str());
-        camodocal::CameraPtr camera = CameraFactory::instance()->generateCameraFromYamlFile(calib_file[i]);
+        camera_model::CameraPtr camera = CameraFactory::instance()->generateCameraFromYamlFile(calib_file[i]);
         m_camera.push_back(camera);
     }
     if (calib_file.size() == 2)
@@ -407,7 +407,7 @@ void FeatureTracker::showUndistortion(const string &name)
 /// @param pts 
 /// @param cam 
 /// @return 
-vector<cv::Point2f> FeatureTracker::undistortedPts(vector<cv::Point2f> &pts, camodocal::CameraPtr cam)
+vector<cv::Point2f> FeatureTracker::undistortedPts(vector<cv::Point2f> &pts, camera_model::CameraPtr cam)
 {
     vector<cv::Point2f> un_pts;
     for (unsigned int i = 0; i < pts.size(); i++)

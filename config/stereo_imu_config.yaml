@@ -1,43 +1,70 @@
 %YAML:1.0
-
+---
 #common parameters
 #support: 1 imu 1 cam; 1 imu 2 cam: 2 cam; 
-imu: 1         
-num_of_cam: 1  
+imu: 0         
+num_of_cam: 2  
 
-imu_topic: "/imu0"
-image0_topic: "/cam0/image_raw"
-image1_topic: "/cam1/image_raw"
+imu_topic: "/sensor_bridge/imu_raw"
+image0_topic: "/hik_camera_1/sync_image"
+image1_topic: "/hik_camera_2/sync_image"
+# imu_topic: "/camera/imu"
+# image0_topic: "/camera/infra1/image_rect_raw"
+# image1_topic: "/camera/infra2/image_rect_raw"
 
 cam0_calib: "cam0_mei.yaml"
 cam1_calib: "cam1_mei.yaml"
-image_width: 752
-image_height: 480
+image_width: 720
+image_height: 540
 
 # Extrinsic parameter between IMU and Camera.
 estimate_extrinsic: 1   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
                         # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess.
 
+
+# Realsense D435i
+# body_T_cam0: !!opencv-matrix
+#    rows: 4
+#    cols: 4
+#    dt: d
+#    data: [1, 0, 0, 0.00552000012248755,
+#            0, 1, 0,  -0.00510000018402934,
+#            0, 0, 1, -0.011739999987185,
+#            0, 0, 0, 1]
+
+# body_T_cam1: !!opencv-matrix
+#    rows: 4
+#    cols: 4
+#    dt: d
+#    data: [1, 0, 0, -0.0444315113127232,
+#            0, 1, 0,  -0.00510000018402934,
+#            0, 0, 1, -0.011739999987185,
+#            0, 0, 0, 1]
+
 body_T_cam0: !!opencv-matrix
    rows: 4
    cols: 4
    dt: d
-   data: [0.0148655429818, -0.999880929698, 0.00414029679422, -0.0216401454975,
-           0.999557249008, 0.0149672133247, 0.025715529948,  -0.064676986768,
-           -0.0257744366974, 0.00375618835797, 0.999660727178, 0.00981073058949,
+   data: [0, -1, 0, 0.055,
+           -1, 0, 0,  0,
+           0, 0, -1, -0.01,
            0, 0, 0, 1]
 
 body_T_cam1: !!opencv-matrix
    rows: 4
    cols: 4
    dt: d
-   data: [0.0125552670891, -0.999755099723, 0.0182237714554, -0.0198435579556,
-           0.999598781151, 0.0130119051815, 0.0251588363115, 0.0453689425024,
-          -0.0253898008918, 0.0179005838253, 0.999517347078, 0.00786212447038,
-          0, 0, 0, 1]
+   data: [0, -1, 0, -0.055,
+           -1, 0, 0,  0,
+           0, 0, -1, -0.01,
+           0, 0, 0, 1]
 
 #Multiple thread support
 multiple_thread: 1
+
+#Gpu accleration support
+use_gpu: 1
+use_gpu_acc_flow: 0
 
 #feature traker paprameters
 # max feature number in feature tracking

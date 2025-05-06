@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.23)
+set(CMAKE_CUDA_ARCHITECTURES 87)
 project(xfeatvins)
 
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_STANDARD 17)
 #-DEIGEN_USE_MKL_ALL")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
-
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
@@ -13,13 +13,18 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     tf
     cv_bridge
-    camera_models
-    image_transport)
+    camera_model
+    image_transport
+    sensor_msgs
+    nodelet)
 
-find_package(OpenCV REQUIRED)
+find_package(Eigen3)
+find_package(OpenCV REQUIRED cudaimgproc)
 find_package(Ceres REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(Torch REQUIRED PATHS /home/emnavi/.local/lib/python3.8/site-packages/torch/share/cmake/Torch)
+find_package(OpenMP REQUIRED)
+
 message(STATUS "Found Torch include is ${TORCH_INCLUDE_DIRS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
@@ -51,14 +56,9 @@ target_link_libraries(xfeat_lib ${CUDA_LIBRARIES} ${OpenCV_LIBS} ${TORCH_LIBRARI
 # include_directories(${PROJECT_SOURCE_DIR}/featureTracker/ort_include/)
 include_directories(${PROJECT_SOURCE_DIR}/featureTracker/xfeat_include/)
 include_directories(${PROJECT_SOURCE_DIR}/src/estimator/)
-include_directories(${catkin_INCLUDE_DIRS} ${CERES_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS} ${CERES_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-find_package(Eigen3)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}
-)
 
 catkin_package()
 

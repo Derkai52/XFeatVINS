@@ -75,6 +75,9 @@ void pubTrackImage(const cv::Mat &imgTrack, const double t)
     std_msgs::Header header;
     header.frame_id = "world";
     header.stamp = ros::Time(t);
+    // // TODO(Derkai): 发布跟踪图像结果可视化的分辨率始终缩小4倍. 为了减少图像传输带宽
+    // cv::Mat resizeimg = imgTrack;
+    // cv::resize(imgTrack, resizeimg, cv::Size(), 0.25, 0.25,  cv::INTER_LINEAR);
     sensor_msgs::ImagePtr imgTrackMsg = cv_bridge::CvImage(header, "bgr8", imgTrack).toImageMsg();
     pub_image_track.publish(imgTrackMsg);
 }

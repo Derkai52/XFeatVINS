@@ -19,14 +19,19 @@
 #include <opencv2/opencv.hpp>
 #include <eigen3/Eigen/Dense>
 
-#include "camodocal/camera_models/CameraFactory.h"
-#include "camodocal/camera_models/CataCamera.h"
-#include "camodocal/camera_models/PinholeCamera.h"
+
+#include "../../../../common/camera_model/include/camera_model/camera_models/CameraFactory.h"
+#include "../../../../common/camera_model/include/camera_model/camera_models/CataCamera.h"
+#include "../../../../common/camera_model/include/camera_model/camera_models/PolyFisheyeCamera.h"
+
+// #include "camodocal/camera_models/CameraFactory.h"
+// #include "camodocal/camera_models/CataCamera.h"
+// #include "camodocal/camera_models/PinholeCamera.h"
 #include "../estimator/parameters.h"
 #include "../utility/tic_toc.h"
 
 using namespace std;
-using namespace camodocal;
+using namespace camera_model;
 using namespace Eigen;
 
 // bool inBorder(const cv::Point2f &pt);
@@ -41,7 +46,7 @@ public:
     void showUndistortion(const string &name);
     void rejectWithF();
     void undistortedPoints();
-    vector<cv::Point2f> undistortedPts(vector<cv::Point2f> &pts, camodocal::CameraPtr cam);
+    vector<cv::Point2f> undistortedPts(vector<cv::Point2f> &pts, camera_model::CameraPtr cam);
     vector<cv::Point2f> ptsVelocity(vector<int> &ids, vector<cv::Point2f> &pts,
                                     map<int, cv::Point2f> &cur_id_pts, map<int, cv::Point2f> &prev_id_pts);
     void showTwoImage(const cv::Mat &img1, const cv::Mat &img2,
@@ -75,7 +80,7 @@ public:
     map<int, cv::Point2f> cur_un_pts_map, prev_un_pts_map;
     map<int, cv::Point2f> cur_un_right_pts_map, prev_un_right_pts_map;
     map<int, cv::Point2f> prevLeftPtsMap;
-    vector<camodocal::CameraPtr> m_camera;
+    vector<camera_model::CameraPtr> m_camera;
     double cur_time;
     double prev_time;
     bool stereo_cam;

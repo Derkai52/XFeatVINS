@@ -1,3 +1,4 @@
+cmake_minimum_required (VERSION 3.16) # This version was released 2011-02-16
 project (GeographicLib)
 
 # Version information
@@ -16,7 +17,6 @@ set (LIBVERSION_BUILD 17.1.2)
 string (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 
-cmake_minimum_required (VERSION 2.8.4) # This version was released 2011-02-16
 
 # (7) Set the default "real" precision.  This should probably be left
 # at 2 (double).

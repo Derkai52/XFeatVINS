@@ -18,7 +18,7 @@ image_width: 720
 image_height: 540
 
 # Extrinsic parameter between IMU and Camera.
-estimate_extrinsic: 1   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
+estimate_extrinsic: 0   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
                         # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess.
 
 
@@ -63,10 +63,13 @@ body_T_cam1: !!opencv-matrix
 multiple_thread: 1
 
 #Gpu accleration support
-use_gpu: 1
+use_gpu: 0
 use_gpu_acc_flow: 0
 
 #feature traker paprameters
+# if image is too dark or light, trun on equalize to find enough features
+equalize: 0
+
 # max feature number in feature tracking
 max_cnt: 150
 

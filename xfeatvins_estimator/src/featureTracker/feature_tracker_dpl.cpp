@@ -185,7 +185,6 @@ void FeatureTrackerDPL::setMask()
     mask(cv::Rect(cx - center_size / 2, cy - center_size / 2,
                   center_size, center_size)) = 0;
 
-
     // prefer to keep features that are tracked for long time
     vector<pair<int, pair<cv::Point2f, int>>> cnt_pts_id;
     // 将当前帧特征点按照（追踪次数，（特征点坐标，id））存储
@@ -752,14 +751,32 @@ void FeatureTrackerDPL::showUndistortion(const string &name)
 /// @return
 vector<cv::Point2f> FeatureTrackerDPL::undistortedPts(vector<cv::Point2f> &pts, camera_model::CameraPtr cam)
 {
+    // std::cout << cam->cameraName.str() << std::endl;
+    int width = 640, height = 480;
+    cv::Mat mask = cv::Mat::zeros(height, width, CV_8UC1);
+
     vector<cv::Point2f> un_pts;
     for (unsigned int i = 0; i < pts.size(); i++)
     {
         Eigen::Vector2d a(pts[i].x, pts[i].y);
         Eigen::Vector3d b;
         cam->liftProjective(a, b);                                   // 针孔相机模型下，返回的b就是去畸变的归一化相机平面坐标[x,y,1]
+        // std::cout << b << std::endl;
+        // std::cout << "+++++++++++++++++++++++" << std::endl;
+        // cam->spaceToPlane(objPoint, imgPoint);
+
+
+
+
+
         un_pts.push_back(cv::Point2f(b.x() / b.z(), b.y() / b.z())); // 针孔相机模型下，b.z()是1.0，所以横纵坐标为归一化平面坐标
+
+        cv::circle(mask, cv::Point2f(b.x() / b.z() * 720, b.y() / b.z() * 540), 3, cv::Scalar(255), -1);  // 半径为3，填充白色圆
+
     }
+    cv::imshow("Mask", mask);
+    cv::waitKey(1);
+
     return un_pts;
 }
 

@@ -119,7 +119,13 @@ cv::Mat getImageFromMsg(const sensor_msgs::ImageConstPtr &img_msg)
 
     // // 缩放到640x640
     cv::Mat resized_image;
-    cv::resize(img, resized_image, cv::Size(640, 480), 0, 0, cv::INTER_LINEAR);
+    cv::resize(img, resized_image, cv::Size(720, 540), 0, 0, cv::INTER_LINEAR);
+    // 直方图均衡化
+    if (EQUALIZE) // 直方图均衡化
+    {
+        cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(3.0, cv::Size(8, 8));
+        clahe->apply(resized_image, resized_image);
+    }
     return resized_image;
     // //////////////////////////////////////////////////////////////////////////////////////
 
@@ -155,23 +161,23 @@ void sync_process()
                 // 0.003s sync tolerance
                 // 最大允许0.003秒的同步延迟
 
-                //最老左目图像比最老右目图像还要更早出现，更早的时间超过0.003s了，那这张最老左目图像就不要了，直接弹出
-                //The oldest left eye image appears earlier than the oldest right eye image, and the earlier time is more than 0.003s. Then the oldest left eye image is no longer needed and will pop up directly.
-                // if(time0 < time1 - 0.003)
-                // {
-                //     img0_buf.pop();
-                //     printf("throw img0\n");
-                // }
-                // //最老左目图像比最老右目图像还要更晚出现，更晚的时间超过0.003s了，那这张最老右目图像就不要了，直接弹出
-                // //The oldest left eye image appears later than the oldest right eye image, and the later time is more than 0.003s. Then the oldest right eye image is no longer needed and will pop up directly.
-                // else if(time0 > time1 + 0.003)
-                // {
-                //     img1_buf.pop();
-                //     printf("throw img1\n");
-                // }
-                // //最老的左右目图像相差不超过0.003，那就是处理它俩了，将这俩图像当作一帧，以左目图像时间戳、header为主，取出图像转化为cv::Mat
-                // //The difference between the oldest left and right eye images does not exceed 0.003, that is to process them. Treat these two images as one frame, mainly the left eye image timestamp and header, take out the image and convert it into cv::mat
-                // else
+                // 最老左目图像比最老右目图像还要更早出现，更早的时间超过0.003s了，那这张最老左目图像就不要了，直接弹出
+                // The oldest left eye image appears earlier than the oldest right eye image, and the earlier time is more than 0.003s. Then the oldest left eye image is no longer needed and will pop up directly.
+                if(time0 < time1 - 0.003)
+                {
+                    img0_buf.pop();
+                    printf("throw img0\n");
+                }
+                //最老左目图像比最老右目图像还要更晚出现，更晚的时间超过0.003s了，那这张最老右目图像就不要了，直接弹出
+                //The oldest left eye image appears later than the oldest right eye image, and the later time is more than 0.003s. Then the oldest right eye image is no longer needed and will pop up directly.
+                else if(time0 > time1 + 0.003)
+                {
+                    img1_buf.pop();
+                    printf("throw img1\n");
+                }
+                //最老的左右目图像相差不超过0.003，那就是处理它俩了，将这俩图像当作一帧，以左目图像时间戳、header为主，取出图像转化为cv::Mat
+                //The difference between the oldest left and right eye images does not exceed 0.003, that is to process them. Treat these two images as one frame, mainly the left eye image timestamp and header, take out the image and convert it into cv::mat
+                else
                 {
                     time = img0_buf.front()->header.stamp.toSec();
                     header = img0_buf.front()->header;

@@ -9,8 +9,8 @@ imu_topic: "/camera/imu"
 image0_topic: "/camera/infra1/image_rect_raw"
 image1_topic: "/camera/infra2/image_rect_raw"
 
-cam0_calib: "left.yaml"
-cam1_calib: "right.yaml"
+cam0_calib: "d435i_left.yaml"
+cam1_calib: "d435i_right.yaml"
 image_width: 640
 image_height: 480
 

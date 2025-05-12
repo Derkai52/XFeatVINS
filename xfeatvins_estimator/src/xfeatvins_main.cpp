@@ -331,7 +331,7 @@ int main(int argc, char **argv)
     {
         printf("please intput: rosrun xfeatvins xfeatvins_node [config file] \n"
                "for example: upervins xfeatvins_node"
-               "~/catkin_ws/src/xfeatvins/config/stereo_imu_config.yaml \n");
+               "~/catkin_ws/src/xfeatvins/config/hik_fisheye.yaml \n");
         return 1;
     }
 

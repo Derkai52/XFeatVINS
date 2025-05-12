@@ -168,22 +168,14 @@ FeatureTrackerDPL::FeatureTrackerDPL()
 void FeatureTrackerDPL::setMask()
 {
     mask = cv::Mat(row, col, CV_8UC1, cv::Scalar(255));
-
-    // 将图像边缘5个像素（防止特征点漂移）以及图像中心10x10个像素（鱼眼畸变矫正后不可用）默认形成非提取区
-    int edge = 5;
-    int center_size = 10;
-    int cx = col / 2;
-    int cy = row / 2;
+    // TODO(Derkai): 将图像边缘5个像素（防止特征点漂移）以及图像中心10x10个像素（鱼眼畸变矫正后不可用）默认形成非提取区
+    int edge = 20;
 
     // 屏蔽边缘：上、下、左、右
     mask(cv::Rect(0, 0, col, edge)) = 0;                          // top
     mask(cv::Rect(0, row - edge, col, edge)) = 0;               // bottom
     mask(cv::Rect(0, 0, edge, row)) = 0;                         // left
     mask(cv::Rect(col - edge, 0, edge, row)) = 0;               // right
-
-    // 屏蔽中心区域
-    mask(cv::Rect(cx - center_size / 2, cy - center_size / 2,
-                  center_size, center_size)) = 0;
 
     // prefer to keep features that are tracked for long time
     vector<pair<int, pair<cv::Point2f, int>>> cnt_pts_id;
@@ -499,7 +491,6 @@ map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> FeatureTrackerDPL::trac
         //printf("feature cnt after add %d\n", (int)ids.size());
     }
 
-    // cur_un_pts = cur_pts;//TODO(Derkai): 因为传入的图片已经去畸变过所以不需要去畸变反投影
     cur_un_pts = undistortedPts(cur_pts, m_camera[0]);//这里实际上包括了对特征点去畸变和反投影至相机归一化平面上，返回的已经是归一化平面上的坐标了
     pts_velocity = ptsVelocity(ids, cur_un_pts, cur_un_pts_map, prev_un_pts_map);//计算特征点在相机系归一化平面上的速度，注意，在传入这个函数之前，cur_un_pts_map和prev_un_pts_map保存的上帧的特征点，函数结束运行以后cur_un_pts_map保存的是当前帧特征点
 
@@ -592,7 +583,6 @@ map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> FeatureTrackerDPL::trac
             reduceVector(cur_un_pts, status);
             reduceVector(pts_velocity, status);
             */
-            // cur_un_right_pts = cur_right_pts;//TODO(Derkai): 因为传入的图片已经去畸变过所以不需要去畸变反投影
             cur_un_right_pts = undistortedPts(cur_right_pts, m_camera[1]);//去畸变加反投影至归一化平面
             right_pts_velocity = ptsVelocity(ids_right, cur_un_right_pts, cur_un_right_pts_map, prev_un_right_pts_map);//计算右目特征点在相机归一化平面上的速度
         }
@@ -751,32 +741,14 @@ void FeatureTrackerDPL::showUndistortion(const string &name)
 /// @return
 vector<cv::Point2f> FeatureTrackerDPL::undistortedPts(vector<cv::Point2f> &pts, camera_model::CameraPtr cam)
 {
-    // std::cout << cam->cameraName.str() << std::endl;
-    int width = 640, height = 480;
-    cv::Mat mask = cv::Mat::zeros(height, width, CV_8UC1);
-
     vector<cv::Point2f> un_pts;
     for (unsigned int i = 0; i < pts.size(); i++)
     {
         Eigen::Vector2d a(pts[i].x, pts[i].y);
         Eigen::Vector3d b;
         cam->liftProjective(a, b);                                   // 针孔相机模型下，返回的b就是去畸变的归一化相机平面坐标[x,y,1]
-        // std::cout << b << std::endl;
-        // std::cout << "+++++++++++++++++++++++" << std::endl;
-        // cam->spaceToPlane(objPoint, imgPoint);
-
-
-
-
-
         un_pts.push_back(cv::Point2f(b.x() / b.z(), b.y() / b.z())); // 针孔相机模型下，b.z()是1.0，所以横纵坐标为归一化平面坐标
-
-        cv::circle(mask, cv::Point2f(b.x() / b.z() * 720, b.y() / b.z() * 540), 3, cv::Scalar(255), -1);  // 半径为3，填充白色圆
-
     }
-    cv::imshow("Mask", mask);
-    cv::waitKey(1);
-
     return un_pts;
 }
 

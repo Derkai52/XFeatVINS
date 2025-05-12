@@ -1,7 +1,7 @@
 <launch>
     <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find xfeatvins)/../config/xfeatvins_rviz_config.rviz" /> -->
 
-	<node name="xfeatvins" pkg="xfeatvins"  type="xfeatvins_node" output="screen" args="$(find xfeatvins)/../config/stereo_imu_config.yaml">
+	<node name="xfeatvins" pkg="xfeatvins"  type="xfeatvins_node" output="screen" args="$(find xfeatvins)/../config/hik_fisheye.yaml">
 	</node >
 
     <!-- 3、发布RTK真值数据 -->
@@ -10,8 +10,8 @@
 	<!-- <node name="global_fusion" pkg="global_fusion"  type="global_fusion_node" output="screen">
 	</node > -->
 
-    <include file="$(find foxglove_bridge)/launch/foxglove_bridge.launch">
+    <!-- <include file="$(find foxglove_bridge)/launch/foxglove_bridge.launch">
             <arg name="port" value="8765"/>
-    </include>
+    </include> -->
 
 </launch>

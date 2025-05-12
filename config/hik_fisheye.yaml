@@ -2,15 +2,12 @@
 ---
 #common parameters
 #support: 1 imu 1 cam; 1 imu 2 cam: 2 cam; 
-imu: 0         
+imu: 1         
 num_of_cam: 2  
 
 imu_topic: "/sensor_bridge/imu_raw"
 image0_topic: "/hik_camera_1/sync_image"
 image1_topic: "/hik_camera_2/sync_image"
-# imu_topic: "/camera/imu"
-# image0_topic: "/camera/infra1/image_rect_raw"
-# image1_topic: "/camera/infra2/image_rect_raw"
 
 cam0_calib: "cam0_mei.yaml"
 cam1_calib: "cam1_mei.yaml"
@@ -21,32 +18,12 @@ image_height: 540
 estimate_extrinsic: 0   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
                         # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess.
 
-
-# Realsense D435i
-# body_T_cam0: !!opencv-matrix
-#    rows: 4
-#    cols: 4
-#    dt: d
-#    data: [1, 0, 0, 0.00552000012248755,
-#            0, 1, 0,  -0.00510000018402934,
-#            0, 0, 1, -0.011739999987185,
-#            0, 0, 0, 1]
-
-# body_T_cam1: !!opencv-matrix
-#    rows: 4
-#    cols: 4
-#    dt: d
-#    data: [1, 0, 0, -0.0444315113127232,
-#            0, 1, 0,  -0.00510000018402934,
-#            0, 0, 1, -0.011739999987185,
-#            0, 0, 0, 1]
-
 body_T_cam0: !!opencv-matrix
    rows: 4
    cols: 4
    dt: d
-   data: [0, -1, 0, 0.055,
-           -1, 0, 0,  0,
+   data: [0, 1, 0, -0.055,
+           1, 0, 0,  0,
            0, 0, -1, -0.01,
            0, 0, 0, 1]
 
@@ -54,8 +31,8 @@ body_T_cam1: !!opencv-matrix
    rows: 4
    cols: 4
    dt: d
-   data: [0, -1, 0, -0.055,
-           -1, 0, 0,  0,
+   data: [0, 1, 0, 0.055,
+           1, 0, 0,  0,
            0, 0, -1, -0.01,
            0, 0, 0, 1]
 
@@ -95,18 +72,18 @@ acc_n: 0.1          # accelerometer measurement noise standard deviation.
 gyr_n: 0.01         # gyroscope measurement noise standard deviation.     
 acc_w: 0.001        # accelerometer bias random work noise standard deviation.  
 gyr_w: 0.0001       # gyroscope bias random work noise standard deviation.     
-g_norm: 9.81007     # gravity magnitude
+g_norm: 9.8015     # gravity magnitude
 
 #unsynchronization parameters
-estimate_td: 0                      # online estimate time offset between camera and imu
-td: 0.0                             # initial value of time offset. unit: s. readed image clock + td = real image clock (IMU clock)
+estimate_td: 1                      # online estimate time offset between camera and imu
+td: -0.01                             # initial value of time offset. unit: s. readed image clock + td = real image clock (IMU clock)
 
 # Path to vio output results
-output_path: "xfeatvins/xfeatvins_estimator/vio_output"
+output_path: "/home/emnavi/ws_xfeatvins/src/xfeatvins/xfeatvins_estimator/vio_output"
 
 #loop closure parameters
 load_previous_pose_graph: 0        # load and reuse previous pose graph; load from 'pose_graph_save_path'
-pose_graph_save_path: "xfeatvins/xfeatvins_estimator/vio_output" # save and load path
+pose_graph_save_path: "/home/emnavi/ws_xfeatvins/src/xfeatvins/xfeatvins_estimator/vio_output" # save and load path
 save_image: 1                   # save image in pose graph for visualization prupose; you can close this function by setting 0 
 
 #deep learning feature points weights
